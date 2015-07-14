@@ -64,7 +64,7 @@ function Construct(options, callback) {
       if (req.method !== 'GET') {
         return next();
       }
-      var matches = req.url.match(/^\/(\w+)(\/.*|)$/);
+      var matches = req.url.match(/^\/(\w+)(\/.*|\?.*|)$/);
       if (!matches) {
         return next();
       }
@@ -181,6 +181,17 @@ function Construct(options, callback) {
     });
 
     return superAfterGet(req, pages, callback);
+  };
+
+  // Do not call loaders for all of the localized content. They will
+  // get called for the current locale's content, which has been
+  // swapped into body, etc. at this point
+  var superCallLoadersForArea = self._apos.callLoadersForArea;
+  self._apos.callLoadersForArea = function(req, area, callback) {
+    if (area.slug.match(/\:localized/)) {
+      return setImmediate(callback);
+    }
+    return superCallLoadersForArea(req, area, callback);
   };
 
   // Invoke the callback. This must happen on next tick or later!

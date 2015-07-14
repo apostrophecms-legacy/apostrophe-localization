@@ -1,0 +1,7 @@
+<span class="apos-locale-picker">{#
+  #}{%- for locale in locales -%}
+    <a class="{% if loop.first %}apos-first {% endif -%}
+      {%- if loop.last %}apos-last {% endif -%}
+      {%- if locale.active %}apos-active {% endif %}" href="{{ locale.url | e }}">{{ locale.label | e }}</a>
+  {%- endfor -%}{#
+#}</span>

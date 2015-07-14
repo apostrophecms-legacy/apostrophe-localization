@@ -141,7 +141,7 @@ function Construct(options, callback) {
 
     if (!pages) {
       // This is a query we don't deal with, such as a distinct query
-      return superAfterGet(req, pages, callback);
+      return superAfterGet(req, results, callback);
     }
 
     _.each(pages, function(page) {

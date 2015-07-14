@@ -128,6 +128,8 @@ See the github issues for limitations of this module.
 
 ## Changelog
 
+0.5.2: don't mess up non-page queries.
+
 0.5.1: populate the default locale in `page.localized` properly.
 
 0.5.0: initial release.

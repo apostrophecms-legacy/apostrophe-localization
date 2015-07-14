@@ -206,8 +206,8 @@ function Construct(options, callback) {
     if (!_.has(page.localized, req.locale)) {
       page.localized[req.locale] = {};
     }
-    if (!_.has(page.localized, req.defaultLocale)) {
-      page.localized[req.defaultLocale] = {};
+    if (!_.has(page.localized, self.defaultLocale)) {
+      page.localized[self.defaultLocale] = {};
     }
   }
 

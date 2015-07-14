@@ -125,3 +125,9 @@ page.localized.en.title
 ## Limitations
 
 See the github issues for limitations of this module.
+
+## Changelog
+
+0.5.1: populate the default locale in `page.localized` properly.
+
+0.5.0: initial release.

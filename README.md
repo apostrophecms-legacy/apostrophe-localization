@@ -28,7 +28,9 @@ The keys in the `locales` object should be standard international language and/o
 
 Optionally, add the locale picker to `outerLayout.html` wherever you see fit:
 
+```
 {{ aposLocalePicker() }}
+```
 
 The locale picker markup is deliberately easy to style, but you may also ignore it in favor of writing your own, as long as you generate the same links.
 
@@ -42,7 +44,7 @@ To translate content, just log in as you normally would and use the locale picke
 
 If you wish, you can specify that certain area and singleton names should not be translatable. Any edits made to these are shared by all locales:
 
-```
+```javascript
 ... other modules ...
 'apostrophe-i18n': {
   ...
@@ -52,7 +54,7 @@ If you wish, you can specify that certain area and singleton names should not be
 
 If you need to, you can lock these down to a specific page or snippet type:
 
-```
+```javascript
 ... other modules ...
 'apostrophe-i18n': {
   ...
@@ -68,7 +70,7 @@ Sometimes it is appropriate to internationalize other schema fields too, particu
 
 So, spell out the additional document properties you want to internationalize:
 
-```
+```javascript
 ... other modules ...
 'apostrophe-i18n': {
   ...
@@ -78,7 +80,7 @@ So, spell out the additional document properties you want to internationalize:
 
 Again, you can lock these down to specific document type names:
 
-```
+```javascript
 ... other modules ...
 'apostrophe-i18n': {
   ...
@@ -90,7 +92,7 @@ Again, you can lock these down to specific document type names:
 
 All localized properties are replicated inside a `localized` object (please pardon my bad Spanish):
 
-```
+```javascript
 {
   title: 'About Us',
   localized: {
@@ -102,6 +104,7 @@ All localized properties are replicated inside a `localized` object (please pard
     }
   }
 }
+```
 
 However, Apostrophe automatically swaps the locale you really wanted to and from `title` and `body` when you fetch or store content. So **code that relies on `title` and `body` still works normally**.
 
@@ -118,3 +121,7 @@ page.localized.en.title
 ```
 
 **However, for performance reasons, widget loaders are NOT called for content in other locales.** Otherwise the performance of the site would drop quickly as locales are added.
+
+## Limitations
+
+See the github issues for limitations of this module.

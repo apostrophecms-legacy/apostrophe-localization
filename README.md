@@ -128,6 +128,8 @@ See the github issues for limitations of this module.
 
 ## Changelog
 
+0.5.3: use the new `apos.beforeLoadWidgets` method rather than `apos.afterGet` to avoid chicken and egg problems. Make a shallow clone of each area so that its slug property can be set distinctly.
+
 0.5.2: don't mess up non-page queries.
 
 0.5.1: populate the default locale in `page.localized` properly.

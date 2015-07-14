@@ -132,16 +132,16 @@ function Construct(options, callback) {
     return superBeforePutPage(req, page, callback);
   };
 
-  var superAfterGet = self._apos.afterGet || function(req, results, callback) {
+  var superBeforeLoadWidgets = self._apos.beforeLoadWidgets || function(req, results, callback) {
     return callback(null);
   };
 
-  self._apos.afterGet = function(req, results, callback) {
+  self._apos.beforeLoadWidgets = function(req, results, callback) {
     var pages = results.pages;
 
     if (!pages) {
       // This is a query we don't deal with, such as a distinct query
-      return superAfterGet(req, results, callback);
+      return superBeforeLoadWidgets(req, results, callback);
     }
 
     _.each(pages, function(page) {
@@ -159,10 +159,20 @@ function Construct(options, callback) {
         if (isUniversal(page, key)) {
           return;
         }
+
+        // for bc with sites that didn't have this module until
+        // this moment, if the default locale has no content,
+        // populate it from the live property
+        if (!_.has(page.localized[self.defaultLocale], key)) {
+          page.localized[self.defaultLocale] = page[key];
+        }
+
         if (!_.has(page.localized[req.locale], key)) {
           return;
         }
-        page[key] = page.localized[req.locale][key];
+        // do a shallow clone so the slug property can differ
+        page[key] = _.clone(page.localized[req.locale][key]);
+
       });
 
       // Other properties are localized only if they are on the list.
@@ -172,6 +182,14 @@ function Construct(options, callback) {
         if (!name) {
           return;
         }
+
+        // for bc with sites that didn't have this module until
+        // this moment, if the default locale has no content,
+        // populate it from the live property
+        if (!_.has(page.localized[self.defaultLocale], name)) {
+          page.localized[self.defaultLocale] = page[name];
+        }
+
         if (!_.has(page.localized[req.locale], name)) {
           return;
         }
@@ -180,7 +198,7 @@ function Construct(options, callback) {
 
     });
 
-    return superAfterGet(req, pages, callback);
+    return superBeforeLoadWidgets(req, pages, callback);
   };
 
   // Do not call loaders for all of the localized content. They will

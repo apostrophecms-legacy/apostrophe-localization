@@ -136,11 +136,23 @@ page.localized.en.title
 
 **However, for performance reasons, widget loaders are NOT called for content in other locales.** Otherwise the performance of the site would drop quickly as locales are added.
 
+## Accessing the current locale string in templates
+
+If you wish, you can access the current locale string, such as `es` or `en`, in a Nunjucks template by invoking `getLocale()`.
+
+```
+{% if getLocale() == 'es' %}
+  {# Something special for Spanish #}
+{% endif %}
+```
+
 ## Limitations
 
 See the github issues for limitations of this module.
 
 ## Changelog
+
+0.5.5: documentation covers how to fetch the current locale name.
 
 0.5.4: the `neverTypes` option completely excludes certain page types and/or snippet types from being localized.
 

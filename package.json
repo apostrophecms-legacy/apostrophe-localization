@@ -1,6 +1,6 @@
 {
   "name": "apostrophe-localization",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Internationalion, translation and localization of content on sites powered by the Apostrophe 2 CMS",
   "main": "index.js",
   "scripts": {

@@ -17,6 +17,7 @@ function Construct(options, callback) {
   self.localized = [ 'title' ].concat(options.localized || []);
   self.locales = options.locales;
   self.defaultLocale = options.defaultLocale;
+  self.neverTypes = options.neverTypes || [];
   self._apos.mixinModuleAssets(self, 'i18n', __dirname, options);
 
   self._action = '/apos-i18n';
@@ -86,6 +87,10 @@ function Construct(options, callback) {
 
   self._apos.beforePutPage = function(req, page, callback) {
 
+    if (_.contains(self.neverTypes, page.type)) {
+      return superBeforePutPage(req, page, callback);
+    }
+
     ensureProperties(page, req);
 
     // We translate top-level properties specifically called out for translation,
@@ -145,6 +150,11 @@ function Construct(options, callback) {
     }
 
     _.each(pages, function(page) {
+
+      if (_.contains(self.neverTypes, page.type)) {
+        return;
+      }
+
       ensureProperties(page, req);
 
       // We translate top-level properties specifically called out for translation,

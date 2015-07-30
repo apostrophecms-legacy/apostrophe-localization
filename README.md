@@ -9,7 +9,7 @@ First make sure you have an [Apostrophe project](http://apostrophenow.org)!
 Then:
 
 ```
-npm install --save apostrophe-i18n
+npm install --save apostrophe-localization
 ```
 
 ## Configuration
@@ -20,7 +20,7 @@ In `app.js`, add the module to your configuration. Specify the default locale (g
 ... other modules ...
 'apostrophe-localization': {
   defaultLocale: 'en',
-  locales: { 'en': 'English', 'es': 'Español'};
+  locales: { 'en': 'English', 'es': 'Español'}
 }
 ```
 
@@ -46,7 +46,7 @@ If you wish, you can specify that certain area and singleton names should not be
 
 ```javascript
 ... other modules ...
-'apostrophe-i18n': {
+'apostrophe-localization': {
   ...
   universal: [ 'banner', 'thumbnail' ]
 }
@@ -56,7 +56,7 @@ If you need to, you can lock these down to a specific page or snippet type:
 
 ```javascript
 ... other modules ...
-'apostrophe-i18n': {
+'apostrophe-localization': {
   ...
   universal: [ 'home:banner', 'event:thumbnail' ]
 }
@@ -72,7 +72,7 @@ So, spell out the additional document properties you want to internationalize:
 
 ```javascript
 ... other modules ...
-'apostrophe-i18n': {
+'apostrophe-localization': {
   ...
   localized: [ 'summary', 'teaser' ]
 }
@@ -82,11 +82,25 @@ Again, you can lock these down to specific document type names:
 
 ```javascript
 ... other modules ...
-'apostrophe-i18n': {
+'apostrophe-localization': {
   ...
   localized: [ 'event:summary', 'blogPost:teaser' ]
 }
 ```
+
+## Cross-cultural page and snippet types
+
+You can also specify that internationalization should never be performed at all for a particular page type or snippet type:
+
+```javascript
+... other modules ...
+'apostrophe-localization': {
+  ...
+  neverTypes: [ 'school', 'teaser' ]
+}
+```
+
+Any document with its `type` property set to `school` or `teaser` will not be internationalized.
 
 ## Under the hood: what it really looks like in the database
 
@@ -127,6 +141,8 @@ page.localized.en.title
 See the github issues for limitations of this module.
 
 ## Changelog
+
+0.5.4: the `neverTypes` option completely excludes certain page types and/or snippet types from being localized.
 
 0.5.3: use the new `apos.beforeLoadWidgets` method rather than `apos.afterGet` to avoid chicken and egg problems. Make a shallow clone of each area so that its slug property can be set distinctly.
 

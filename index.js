@@ -287,12 +287,27 @@ function Construct(options, callback) {
       query.type = { $nin: self.neverTypes };
     }
     return async.series({
-      count: function(callback) {
-        return self._apos.pages.count(query, function(err, _count) {
+      get: function(callback) {
+        return self._apos.get(req, query, {
+          sort: sort,
+          fields: {
+            title: 1,
+            slug: 1,
+            type: 1,
+            localizedAt: 1
+          },
+          skip: skip,
+          // Don't do expensive things
+          areas: false,
+          // Don't care if it's published or not
+          published: null,
+          limit: limit
+        }, function(err, results) {
           if (err) {
             return callback(err);
           }
-          count = _count;
+          count = results.total;
+          docs = results.pages;
           total = Math.ceil(count / perPage);
           if (total < 1) {
             total = 1;
@@ -300,24 +315,6 @@ function Construct(options, callback) {
           return callback(null);
         });
       },
-      find: function(callback) {
-        return self._apos.pages.find(query, {
-          title: 1,
-          slug: 1,
-          type: 1,
-          localizedAt: 1
-        })
-        .sort(sort)
-        .skip(skip)
-        .limit(limit)
-        .toArray(function(err, _docs) {
-          if (err) {
-            return callback(err);
-          }
-          docs = _docs;
-          return callback(null);
-        });
-      }
     }, function(err) {
       if (err) {
         console.error(err);

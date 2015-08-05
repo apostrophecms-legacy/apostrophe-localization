@@ -102,6 +102,24 @@ You can also specify that internationalization should never be performed at all 
 
 Any document with its `type` property set to `school` or `teaser` will not be internationalized.
 
+## Localization report
+
+Your users can view a report of documents that need to be localized.
+
+This report includes both documents that have never been localized and documents that have been updated for the default locale more recently than in the current locale.
+
+For instance, if "English" is the default locale and you switch to "Spanish" and then open the localization report, you'll see a list of pages that have never been translated to Spanish or have a newer version in English.
+
+Once you update those pages in Spanish, they no longer appear in the report until the next time an update is needed.
+
+The documents that have gone the longest without attention appear first in the report.
+
+To add the report, just add this code to `outerLayout.html` along with the other menus:
+
+```
+{{ aposLocalizationMenu(permissions) }}
+```
+
 ## Under the hood: what it really looks like in the database
 
 All localized properties are replicated inside a `localized` object (please pardon my bad Spanish):
@@ -151,6 +169,8 @@ If you wish, you can access the current locale string, such as `es` or `en`, in 
 See the github issues for limitations of this module.
 
 ## Changelog
+
+0.5.6: support for the new localization report. Pages translated before this report was invented will all show as needing localization until they are edited for the first time for each locale.
 
 0.5.5: documentation covers how to fetch the current locale name.
 

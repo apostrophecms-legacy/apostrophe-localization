@@ -1,0 +1,25 @@
+{%- include 'pagerMacros.html' -%}
+
+<table class="apos-localization-report apos-manage-table">
+  <tbody data-list class="apos-localization">
+    <tr>
+      <th>{{ __('Title') }}</th>
+      <th>{{ __('Type') }}</th>
+      <th>{{ __('Date') }}</th>
+    </tr>
+    {% for doc in docs %}
+      <tr data-item class="apos-doc">
+        <td class="apos-title"><a target="_blank" href="/apos-search/search-result?slug={{ doc.slug | e }}">{{ doc.title | e }}</a></td>
+        <td class="apos-type">{{ typeLabels[doc.type] }}</td>
+        <td class="apos-date">
+          {%- if doc.localizedAt[defaultLocale] -%}
+            {{ doc.localizedAt[defaultLocale] | date('MM/DD/YY') }} {{ __('at') }} {{ doc.localizedAt[defaultLocale] | date('h:mm') }}
+          {%- else -%}
+            {{ __('NEW') }}
+          {%- endif -%}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{{ renderPager(pager, '#') }}

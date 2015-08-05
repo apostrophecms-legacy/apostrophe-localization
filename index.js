@@ -12,15 +12,15 @@ function Construct(options, callback) {
   self.options = options;
   self._apos = options.apos;
   self._app = options.app;
-
+  self._pages = options.pages;
   self.universal = options.universal || [];
   self.localized = [ 'title' ].concat(options.localized || []);
   self.locales = options.locales;
   self.defaultLocale = options.defaultLocale;
   self.neverTypes = options.neverTypes || [];
-  self._apos.mixinModuleAssets(self, 'i18n', __dirname, options);
+  self._apos.mixinModuleAssets(self, 'localization', __dirname, options);
 
-  self._action = '/apos-i18n';
+  self._action = '/apos-localization';
 
   self._apos.addLocal('aposLocalePicker', function() {
     var currentLocale = self._apos._aposLocals.getLocale();
@@ -44,6 +44,11 @@ function Construct(options, callback) {
     req.session.locale = locale;
     req.locale = locale;
   };
+
+  self._apos.pushGlobalCallWhen('user', 'window.aposLocalization = new AposLocalization()');
+
+  self.pushAsset('script', 'user', { when: 'user' });
+  self.pushAsset('stylesheet', 'user', { when: 'user' });
 
   self.middleware = [
 
@@ -98,6 +103,8 @@ function Construct(options, callback) {
     // walk of all areas is a bad idea here because it would make more sense
     // to just translate the entire top-level area. -Tom
 
+    var before = JSON.stringify(page.localized[req.locale] || {});
+
     _.each(page, function(value, key) {
       if (!isArea(value)) {
         return;
@@ -133,6 +140,18 @@ function Construct(options, callback) {
         page.localized[self.defaultLocale][name] = page[name];
       }
     });
+
+    var after = JSON.stringify(page.localized[req.locale] || {});
+
+    if (before !== after) {
+      page.localizedAt[req.locale] = new Date();
+      if (req.locale === self.defaultLocale) {
+        page.localizedStale = _.without(_.keys(self.locales), self.defaultLocale);
+      } else {
+        // modifies in place
+        _.pull(page.localizedStale, req.locale);
+      }
+    }
 
     return superBeforePutPage(req, page, callback);
   };
@@ -222,6 +241,120 @@ function Construct(options, callback) {
     return superCallLoadersForArea(req, area, callback);
   };
 
+  self._apos.addLocal('aposLocalizationMenu', function(args) {
+    var result = self.render('menu', args);
+    return result;
+  });
+
+  self._app.post(self._action + '/report', function(req, res) {
+    var modal = true;
+    if (req.body.page) {
+      // just replacing the content with a new page
+      modal = false;
+    }
+    var page = self._apos.sanitizeInteger(req.body.page);
+    if (page < 1) {
+      page = 1;
+    }
+    var perPage = (self.options.report && self.options.report.perPage) || 20;
+    var skip = (page - 1) * perPage;
+    var limit = perPage;
+    var sort = {};
+    var total;
+    var count;
+    var docs;
+    // Most egregiously ancient first
+    sort['localizedAt.' + self.defaultLocale] = 1;
+    var query = {
+      localized: { $exists: 1 },
+      $or: [
+        {
+          localizedStale: {
+            $in: [ req.locale ]
+          }
+        },
+        {
+          localizedSeen: {
+            $nin: [ req.locale ]
+          }
+        },
+        {
+          localizedSeen: { $exists: 0 }
+        }
+      ]
+    };
+    if (self.neverTypes.length) {
+      query.type = { $nin: self.neverTypes };
+    }
+    return async.series({
+      count: function(callback) {
+        return self._apos.pages.count(query, function(err, _count) {
+          if (err) {
+            return callback(err);
+          }
+          count = _count;
+          total = Math.ceil(count / perPage);
+          if (total < 1) {
+            total = 1;
+          }
+          return callback(null);
+        });
+      },
+      find: function(callback) {
+        return self._apos.pages.find(query, {
+          title: 1,
+          slug: 1,
+          type: 1,
+          localizedAt: 1
+        })
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .toArray(function(err, _docs) {
+          if (err) {
+            return callback(err);
+          }
+          docs = _docs;
+          return callback(null);
+        });
+      }
+    }, function(err) {
+      if (err) {
+        console.error(err);
+        res.statusCode = 500;
+        return res.send('error');
+        return res.send({ status: 'error' });
+      }
+
+      var typeLabels = {};
+      _.each(self._pages.types, function(type) {
+        if (type.instanceLabel) {
+          typeLabels[type._instance] = type.instanceLabel;
+        }
+        if (type.label) {
+          typeLabels[type.name] = type.label;
+        }
+      });
+
+      return res.send(
+        self.render(modal ? 'report.html' : 'reportPage.html',
+          {
+            docs: docs,
+            locales: self.locales,
+            locale: req.locale,
+            typeLabels: typeLabels,
+            defaultLocale: self.defaultLocale,
+            pager: {
+              page: page,
+              total: total
+            }
+          },
+          req
+        )
+      );
+    });
+  });
+
   // Invoke the callback. This must happen on next tick or later!
   return process.nextTick(function() {
     return callback(null);
@@ -231,6 +364,13 @@ function Construct(options, callback) {
     if (!_.has(page, 'localized')) {
       page.localized = {};
     }
+    if (!_.has(page, 'localizedAt')) {
+      page.localizedAt = {};
+    }
+    if (!_.has(page, 'localizedStale')) {
+      page.localizedStale = [];
+    }
+    page.localizedSeen = _.union(page.localizedSeen || [], _.keys(self.locales));
     if (!_.has(page.localized, req.locale)) {
       page.localized[req.locale] = {};
     }
@@ -265,6 +405,7 @@ function Construct(options, callback) {
     }
     return name;
   }
+
 };
 
 // Export the constructor so others can subclass

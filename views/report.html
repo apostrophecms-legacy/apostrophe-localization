@@ -1,0 +1,26 @@
+{% extends 'baseModal.html' %}
+{% include "formMacros.html" %}
+{% include "uiMacros.html" %}
+
+{% block modalClass %}apos-localization-report apos-ui-modal-no-sidebar{% endblock%}
+
+{% block modalLabel %}
+  Localization Report
+{% endblock%}
+
+{% block modalControls %}
+  {{ renderProgressBtn({dataAttrs: 'data-cancel', float: 'left', arrow: 'left', label: __('Done')}) }}
+{% endblock %}
+
+{% block modalBody %}
+  {% if locale == defaultLocale %}
+    <p class="apos-instructions">{{ __('You are currently viewing the default locale, %s. Switch to another locale to view this report.', locale) }}</p>
+  {% else %}
+    <p class="apos-instructions">
+      {{ __('Documents listed below have been updated in %s and require updates in %s.', locales[defaultLocale], locales[locale]) }}
+    </p>
+    <div data-page-content>
+      {% include "reportPage.html" %}
+    </div>
+  {% endif %}
+{% endblock %}

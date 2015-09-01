@@ -22,7 +22,7 @@ function Construct(options, callback) {
 
   self._action = '/apos-localization';
 
-  self._apos.addLocal('aposLocalePicker', function() {
+  self._apos.addLocal('aposLocalePicker', function(args) {
     var currentLocale = self._apos._aposLocals.getLocale();
     var currentUrl = self._apos._aposLocals.getUrl();
     var locales = [];
@@ -37,7 +37,7 @@ function Construct(options, callback) {
       };
       locales.push(localeObject);
     });
-    return self.render('localePicker', { locales: locales });
+    return self.render('localePicker', { locales: locales, args: args });
   });
 
   self.setLocale = function(req, locale) {

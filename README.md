@@ -170,6 +170,8 @@ See the github issues for limitations of this module.
 
 ## Changelog
 
+0.5.7: `aposLocalePicker` now accepts an optional argument, which is passed on to the template as `args`. You can take advantage of this feature in your override of the `localePicker.html` template to distinguish different styles.
+
 0.5.6: support for the new localization report. Pages translated before this report was invented will all show as needing localization until they are edited for the first time for each locale.
 
 0.5.5: documentation covers how to fetch the current locale name.

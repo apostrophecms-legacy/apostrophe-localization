@@ -31,6 +31,7 @@ function Construct(options, callback) {
       newUrl = '/' + locale + currentUrl;
 
       var localeObject = {
+        key: locale,
         label: label,
         url: newUrl,
         active: (currentLocale === locale)

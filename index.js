@@ -26,6 +26,10 @@ function Construct(options, callback) {
     var currentLocale = self._apos._aposLocals.getLocale();
     var currentUrl = self._apos._aposLocals.getUrl();
     var locales = [];
+    var availableLanguages = _.keys(self.locales);
+    if( args && args.localized){
+		availableLanguages = _.keys(args.localized);
+	}
 
     _.each(self.locales, function(label, locale) {
       newUrl = '/' + locale + currentUrl;
@@ -34,6 +38,7 @@ function Construct(options, callback) {
         key: locale,
         label: label,
         url: newUrl,
+        translated: _.contains(availableLanguages, locale),
         active: (currentLocale === locale)
       };
       locales.push(localeObject);

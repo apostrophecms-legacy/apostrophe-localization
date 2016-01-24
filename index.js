@@ -27,7 +27,7 @@ function Construct(options, callback) {
     var currentUrl = self._apos._aposLocals.getUrl();
     var locales = [];
     var availableLanguages = _.keys(self.locales);
-    if( args && args.localized){
+    if( args && args.localized && args._edit == false){
 		availableLanguages = _.keys(args.localized);
 	}
 

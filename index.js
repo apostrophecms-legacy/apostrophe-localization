@@ -27,7 +27,6 @@ function Construct(options, callback) {
     var currentUrl = self._apos._aposLocals.getUrl();
     var locales = [];
     var availableLanguages = []; //_.keys(self.locales);
-    console.log("+", args._edit);
     if( args && args.localized && args._edit == undefined){
 		availableLanguages = _.keys(args.localized);
 	}

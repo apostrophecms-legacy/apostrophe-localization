@@ -207,7 +207,7 @@ function Construct(options, callback) {
           return;
         }
         // do a shallow clone so the slug property can differ
-        page[key] = _.clone(page.localized[req.locale][key]);
+        page[key] = _.clone(page.localized[req.locale][key], true);
 
       });
 

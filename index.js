@@ -23,14 +23,16 @@ function Construct(options, callback) {
   self._action = '/apos-localization';
 
   self._apos.addLocal('aposLocalePicker', function(args) {
+
   	args = args || {};
     var currentLocale = self._apos._aposLocals.getLocale();
     var currentUrl = self._apos._aposLocals.getUrl();
     var locales = [];
     var availableLanguages = _.keys(self.locales);
-    if( args && args.localized && args._edit == undefined){
-		availableLanguages = _.keys(args.localized);
-	}
+
+    if (args && args.localized && args._edit == undefined) {
+  		availableLanguages = _.keys(args.localized);
+  	}
 
     _.each(self.locales, function(label, locale) {
       newUrl = '/' + locale + currentUrl;
@@ -44,7 +46,9 @@ function Construct(options, callback) {
       };
       locales.push(localeObject);
     });
+
     return self.render('localePicker', { locales: locales, args: args });
+
   });
 
   self.setLocale = function(req, locale) {
@@ -359,6 +363,22 @@ function Construct(options, callback) {
     });
   });
 
+  self._apos.on('tasks:register', function(taskGroups) {
+
+    // Typically used only once when apostrophe-localization is added to
+    // an existing site.
+    //
+    // Populate the default locale simply by saving all of the documents again,
+    // which triggers population of the `locales` subproperty for the default locale
+
+    taskGroups.apostrophe.populateDefaultLocale = function(apos, argv, callback) {
+      var req = apos.getTaskReq();
+      return apos.forEachPage({}, function(page, callback) {
+        return apos.putPage(req, page.slug, {}, page, callback);
+      }, callback);
+    };
+  });
+  
   // Invoke the callback. This must happen on next tick or later!
   return process.nextTick(function() {
     return callback(null);

@@ -170,6 +170,8 @@ See the github issues for limitations of this module.
 
 ## Changelog
 
+0.5.9: added `apostrophe:populate-default-locale` task to be run just once when this module is added to an existing site; without this you'll see strange behavior on an existing site that wasn't always storing its default locale in a localized way. Touched up code formatting.
+
 0.5.8: the locale choice objects provided to `aposLocalePicker` now have a `locale` property with the actual locale, so you can write custom logic around that. Thanks to Fotis Paraskevopoulos.
 
 0.5.7: `aposLocalePicker` now accepts an optional argument, which is passed on to the template as `args`. You can take advantage of this feature in your override of the `localePicker.html` template to distinguish different styles.

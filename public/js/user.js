@@ -24,6 +24,11 @@ function AposLocalization() {
       self.modal();
       return false;
     });
+    // Include locale name with all editing requests so the middleware can see it and
+    // avoid race conditions with the locale switcher
+    $.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+      jqXHR.setRequestHeader('apos-locale', apos.data.aposLocale);
+    });
   };
 
   // So it's possible to override self.setup

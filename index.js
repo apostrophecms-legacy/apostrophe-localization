@@ -54,6 +54,7 @@ function Construct(options, callback) {
   self.setLocale = function(req, locale) {
     req.session.locale = locale;
     req.locale = locale;
+    req.pushData({ aposLocale: req.locale });
   };
 
   self._apos.pushGlobalCallWhen('user', 'window.aposLocalization = new AposLocalization()');
@@ -63,11 +64,15 @@ function Construct(options, callback) {
 
   self.middleware = [
 
-    // if a locale is set in the session, set req.locale based on that
-
+    // if a locale is set in the session, set req.locale based on that.
+    // Exception: an apos-locale header trumps the session, preventing
+    // race conditions between the locale switcher and requests already
+    // in flight to save content
+``
     function(req, res, next) {
-      if (req.session.locale) {
-        req.locale = req.session.locale;
+      var desiredLocale = req.headers['apos-locale'] || req.session.locale;
+      if (desiredLocale) {
+        req.locale = desiredLocale;
       } else {
         req.locale = self.defaultLocale;
       }
@@ -94,6 +99,11 @@ function Construct(options, callback) {
       if (!req.url.length) {
         req.url = '/';
       }
+      return next();
+    },
+    
+    function(req, res, next) {
+      req.pushData({ aposLocale: req.locale });
       return next();
     }
 
@@ -364,17 +374,13 @@ function Construct(options, callback) {
   });
 
   self._apos.on('tasks:register', function(taskGroups) {
-
-    // Typically used only once when apostrophe-localization is added to
-    // an existing site.
-    //
+    // Typically used only once when the s
     // Populate the default locale simply by saving all of the documents again,
     // which triggers population of the `locales` subproperty for the default locale
-
     taskGroups.apostrophe.populateDefaultLocale = function(apos, argv, callback) {
       var req = apos.getTaskReq();
       return apos.forEachPage({}, function(page, callback) {
-        return apos.putPage(req, page.slug, {}, page, callback);
+        apos.putPage(req, page.slug, page, callback);
       }, callback);
     };
   });

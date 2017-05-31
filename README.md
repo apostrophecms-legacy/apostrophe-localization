@@ -170,6 +170,8 @@ See the github issues for limitations of this module.
 
 ## Changelog
 
+0.5.10: requests such as area edits now carry their intended locale with them. This ensures that a race condition between a locale switch and an area edit does not result in the accidental crushing of content for one locale by content from another.
+
 0.5.9: added `apostrophe:populate-default-locale` task to be run just once when this module is added to an existing site; without this you'll see strange behavior on an existing site that wasn't always storing its default locale in a localized way. Touched up code formatting.
 
 0.5.8: the locale choice objects provided to `aposLocalePicker` now have a `locale` property with the actual locale, so you can write custom logic around that. Thanks to Fotis Paraskevopoulos.

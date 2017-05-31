@@ -68,7 +68,7 @@ function Construct(options, callback) {
     // Exception: an apos-locale header trumps the session, preventing
     // race conditions between the locale switcher and requests already
     // in flight to save content
-``
+
     function(req, res, next) {
       var desiredLocale = req.headers['apos-locale'] || req.session.locale;
       if (desiredLocale) {

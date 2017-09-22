@@ -1,5 +1,11 @@
 # apostrophe-localization
 
+## DEPRECATED — for 0.5 ONLY
+
+Please use [apostrophe-workflow](https://npmjs.org/package/apostrophe-workflow) for localization, translation and internationalization of Apostrophe 2.x projects. This OLD module was exclusively for Apostrophe 0.5.x.
+
+## OLD instructions
+
 Allows internationalization, translation and localization of content on an [Apostrophe site](http://apostrophenow.org).
 
 ## Installation

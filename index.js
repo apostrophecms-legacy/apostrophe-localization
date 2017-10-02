@@ -214,14 +214,14 @@ function Construct(options, callback) {
         // this moment, if the default locale has no content,
         // populate it from the live property
         if (!_.has(page.localized[self.defaultLocale], key)) {
-          page.localized[self.defaultLocale] = page[key];
+          page.localized[self.defaultLocale][key] = page[key];
         }
 
         if (!_.has(page.localized[req.locale], key)) {
           return;
         }
         // do a shallow clone so the slug property can differ
-        page[key] = _.clone(page.localized[req.locale][key]);
+        page[key] = _.clone(page.localized[req.locale][key], true);
 
       });
 
@@ -237,7 +237,7 @@ function Construct(options, callback) {
         // this moment, if the default locale has no content,
         // populate it from the live property
         if (!_.has(page.localized[self.defaultLocale], name)) {
-          page.localized[self.defaultLocale] = page[name];
+          page.localized[self.defaultLocale][name] = page[name];
         }
 
         if (!_.has(page.localized[req.locale], name)) {
